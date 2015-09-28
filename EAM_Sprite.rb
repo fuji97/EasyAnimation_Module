@@ -76,6 +76,11 @@ module EAM_Sprite
 		@rotationOY = y
 	end
 	
+	def setZoomPoint(x,y)
+		@zoomOX = x
+		@zoomOY = y
+	end
+	
 	# Animate position
 	def move(x,y,frame,ease=:linear_tween)
 		@transition["stX"] = self.x
@@ -128,12 +133,12 @@ module EAM_Sprite
 	
 	# Animate color blending
 	def coloring(mColor,frame,ease=:linear_tween)
-		@coloring["start"] = self.color.clone
-		@coloring["end"] = mColor.clone
+		@coloring["start"] = self.color
+		@coloring["end"] = mColor
 		@coloring["frame"] = 0
 		@coloring["totFrame"] = frame
 		@coloring["ease"] = Ease.method(ease)
-		@coloring["colorVal"] = self.color.clone
+		@coloring["colorVal"] = self.color
 		@coloring["active"] = true
 	end
 	
@@ -170,15 +175,18 @@ module EAM_Sprite
 			if !@zoomOX.nil?
 				defOX = self.ox
 				self.ox = @zoomOX
+				echo(@zoom["frame"].to_s + " " + @zoomOX.to_s + " ")
 			end
 			if !@zoomOY.nil?
 				defOY = self.oy
 				self.oy = @zoomOY
+				echoln (@zoomOY.to_s)
 			end
-			self.zoom_x = @zoom["XValue"].round
-			self.zoom_y = @zoom["YValue"].round
+			self.zoom_x = @zoom["XValue"]
+			self.zoom_y = @zoom["YValue"]
 			self.ox = defOX if !@zoomOX.nil?
 			self.oy = defOY if !@zoomOY.nil?
+			echoln("Frame: " + @zoom["frame"].to_s + " " + @zoom["XValue"].to_s + " " + @zoom["YValue"].to_s)
 			if @zoom["frame"] >= @zoom["totFrame"]
 				@zoom["active"] = false
 				self.zoom_x = @zoom["edX"]
@@ -210,7 +218,7 @@ module EAM_Sprite
 			@coloring["colorVal"].green = @coloring["ease"].call(@coloring["frame"], @coloring["start"].green, @coloring["end"].green-@coloring["start"].green, @coloring["totFrame"]) if @coloring["start"].green != @coloring["end"].green
 			@coloring["colorVal"].blue = @coloring["ease"].call(@coloring["frame"], @coloring["start"].blue, @coloring["end"].blue-@coloring["start"].blue, @coloring["totFrame"]) if @coloring["start"].blue != @coloring["end"].blue
 			@coloring["colorVal"].alpha = @coloring["ease"].call(@coloring["frame"], @coloring["start"].alpha, @coloring["end"].alpha-@coloring["start"].alpha, @coloring["totFrame"]) if @coloring["start"].alpha != @coloring["end"].alpha
-			self.color = @coloring["colorVal"]
+			self.color = @coloring["colorVal"].round
 			if @coloring["frame"] >= @coloring["totFrame"]
 				@coloring["active"] = false
 				self.color = @coloring["end"]
@@ -296,155 +304,5 @@ module EAM_Sprite
 	def drag_xy(limit_x=nil,limit_y=nil,limit_width=nil,limit_height=nil)
 		return if defined?($mouse) != nil
 		$mouse.drag_xy(self,limit_x,limit_y,limit_width,limit_height)
-	end
-end
-
-module EAM_Viewport
-	
-end
-
-class Ease
-	class << self
-		def linear_tween(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return c * t / d + b
-		end
-
-		def ease_in_quad(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return c*(t/=d)*t + b;
-		end
-
-		def ease_out_quad(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return -c *(t/=d)*(t-2) + b;
-		end
-
-		def ease_in_out_quad(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			t /= d / 2
-			return c / 2*t*t + b if (t < 1)
-			t -= 1
-			return -c/2 * (t*(t-2) - 1) + b
-		end
-
-		def ease_in_cubic(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return c*(t/=d)*t*t + b
-		end
-
-		def ease_out_cubic(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return c*((t=t/d-1)*t*t + 1) + b
-		end
-
-		def ease_in_out_cubic(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return c/2*t*t*t + b if ((t/=d/2) < 1)
-			return c/2*((t-=2)*t*t + 2) + b
-		end
-
-		def ease_in_quart(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return c*(t/=d)*t*t*t + b
-		end
-
-		def ease_out_quart(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return -c * ((t=t/d-1)*t*t*t - 1) + b
-		end
-
-		def ease_in_out_quart(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return c/2*t*t*t*t + b if ((t/=d/2) < 1)
-			return -c/2 * ((t-=2)*t*t*t - 2) + b
-		end
-
-		def ease_in_quint(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return c*(t/=d)*t*t*t*t + b
-		end
-
-		def ease_out_quint(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return c*((t=t/d-1)*t*t*t*t + 1) + b
-		end
-
-		def ease_in_out_quint(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return c/2*t*t*t*t*t + b if ((t/=d/2) < 1)
-			return c/2*((t-=2)*t*t*t*t + 2) + b
-		end
-
-		def ease_in_sine(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return -c * Math.cos(t/d * (Math::PI/2)) + c + b
-		end
-
-		def ease_out_sine(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return c * Math.sin(t/d * (Math::PI/2)) + b
-		end
-
-		def ease_in_out_sine(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return -c/2 * (Math.cos(Math::PI*t/d) - 1) + b
-		end
-
-		def ease_in_expo(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return (t==0) ? b : c * (2 ** (10 * (t/d - 1))) + b
-		end
-
-		def ease_out_expo(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return (t==d) ? b+c : c * (-2**(-10 * t/d) + 1) + b
-		end
-
-		def ease_in_out_expo(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return b if t == 0
-			return b + c if t == d
-			return (c/2) * 2**(10 * (t-1)) + b if ((t /= d/2) < 1)
-			return (c/2) * (-2**(-10 * t-=1) + 2) + b
-		end
-
-		def ease_in_circ(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return -c * (Math.sqrt(1 - (t/=d)*t) - 1) + b
-		end
-
-		def ease_out_circ(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return c * Math.sqrt(1 - (t=t/d-1)*t) + b
-		end
-
-		def ease_in_out_circ(t, b, c, d)
-			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
-			return -c/2 * (Math.sqrt(1 - t*t) - 1) + b if ((t/=d/2) < 1)
-			return c/2 * (Math.sqrt(1 - (t-=2)*t) + 1) + b
-		end
 	end
 end
