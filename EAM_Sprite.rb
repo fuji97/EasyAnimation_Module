@@ -1,4 +1,4 @@
-# TODO - Check if custom centre works
+# TODO - Fix custom centre point
 
 ################################################################################
 #	EASYANIMATION MODULE FOR SPRITE, extend only Sprites
@@ -33,6 +33,7 @@ module EAM_Sprite
 		@transition["ease"] = nil
 		@transition["XValue"] = 0
 		@transition["YValue"] = 0
+		@transition["callback"] = nil
 		@transition["active"] = false
 		# Initializing opacity variables
 		@fade["start"] = 0
@@ -41,6 +42,7 @@ module EAM_Sprite
 		@fade["totFrame"] = 0
 		@fade["ease"] = nil
 		@fade["opacityVal"] = 0
+		@fade["callback"] = nil
 		@fade["active"] = false
 		# Initializing zoom variables
 		@zoom["stX"] = 0
@@ -52,6 +54,7 @@ module EAM_Sprite
 		@zoom["ease"] = nil
 		@zoom["XValue"] = 0
 		@zoom["YValue"] = 0
+		@zoom["callback"] = nil
 		@zoom["active"] = false
 		# Initializing angle variables
 		@rotate["start"] = 0
@@ -60,6 +63,7 @@ module EAM_Sprite
 		@rotate["totFrame"] = 0
 		@rotate["ease"] = nil
 		@rotate["angleVal"] = 0
+		@rotate["callback"] = nil
 		@rotate["active"] = false
 		# Initializing color variables
 		@coloring["start"] = 0
@@ -68,6 +72,7 @@ module EAM_Sprite
 		@coloring["totFrame"] = 0
 		@coloring["ease"] = nil
 		@coloring["colorVal"] = 0
+		@coloring["callback"] = nil
 		@coloring["active"] = false
 	end
 	
@@ -82,7 +87,7 @@ module EAM_Sprite
 	end
 	
 	# Animate position
-	def move(x,y,frame,ease=:linear_tween)
+	def move(x,y,frame,ease=:linear_tween,callback=nil)
 		@transition["stX"] = self.x
 		@transition["stY"] = self.y
 		@transition["edX"] = x
@@ -92,22 +97,24 @@ module EAM_Sprite
 		@transition["ease"] = Ease.method(ease)
 		@transition["XValue"] = self.x
 		@transition["YValue"] = self.y
+		@transition["callback"] = callback ? EAM_Callback.method(callback) : nil
 		@transition["active"] = true
 	end
 	
 	# Animate opacity
-	def fade(opacity,frame,ease=:linear_tween)
+	def fade(opacity,frame,ease=:linear_tween,callback=nil)
 		@fade["start"] = self.opacity
 		@fade["end"] = opacity
 		@fade["frame"] = 0
 		@fade["totFrame"] = frame
 		@fade["ease"] = Ease.method(ease)
 		@fade["opacityVal"] = self.opacity
+		@fade["callback"] = callback ? EAM_Callback.method(callback) : nil
 		@fade["active"] = true
 	end
 	
 	# Animate zoom
-	def zoom(x,y,frame,ease=:linear_tween)
+	def zoom(x,y,frame,ease=:linear_tween,callback=nil)
 		@zoom["stX"] = self.zoom_x
 		@zoom["stY"] = self.zoom_y
 		@zoom["edX"] = x
@@ -117,28 +124,31 @@ module EAM_Sprite
 		@zoom["ease"] = Ease.method(ease)
 		@zoom["XValue"] = self.zoom_x
 		@zoom["YValue"] = self.zoom_y
+		@zoom["callback"] = callback ? EAM_Callback.method(callback) : nil
 		@zoom["active"] = true
 	end
 	
 	# Animate rotation
-	def rotate(angle,frame,ease=:linear_tween)
+	def rotate(angle,frame,ease=:linear_tween,callback=nil)
 		@rotate["start"] = self.angle
 		@rotate["end"] = angle
 		@rotate["frame"] = 0
 		@rotate["totFrame"] = frame
 		@rotate["ease"] = Ease.method(ease)
 		@rotate["angleVal"] = self.angle
+		@rotate["callback"] = callback ? EAM_Callback.method(callback) : nil
 		@rotate["active"] = true
 	end
 	
 	# Animate color blending
-	def coloring(mColor,frame,ease=:linear_tween)
-		@coloring["start"] = self.color
+	def coloring(mColor,frame,ease=:linear_tween,callback=nil)
+		@coloring["start"] = self.color.clone
 		@coloring["end"] = mColor
 		@coloring["frame"] = 0
 		@coloring["totFrame"] = frame
 		@coloring["ease"] = Ease.method(ease)
-		@coloring["colorVal"] = self.color
+		@coloring["colorVal"] = self.color.clone
+		@coloring["callback"] = callback ? EAM_Callback.method(callback) : nil
 		@coloring["active"] = true
 	end
 	
@@ -157,6 +167,7 @@ module EAM_Sprite
 				@transition["active"] = false
 				self.x = @transition["edX"]
 				self.y = @transition["edY"]
+				@transition["callback"].call(self,:move) if @transition["callback"]
 			end
 		end
 		if @fade["active"]
@@ -166,6 +177,7 @@ module EAM_Sprite
 			if @fade["frame"] >= @fade["totFrame"]
 				@fade["active"] = false
 				self.opacity = @fade["end"]
+				@fade["callback"].call(self,:fade) if @fade["callback"]
 			end
 		end
 		if @zoom["active"]
@@ -180,17 +192,18 @@ module EAM_Sprite
 			if !@zoomOY.nil?
 				defOY = self.oy
 				self.oy = @zoomOY
-				echoln (@zoomOY.to_s)
+				#echoln (@zoomOY.to_s)
 			end
 			self.zoom_x = @zoom["XValue"]
 			self.zoom_y = @zoom["YValue"]
 			self.ox = defOX if !@zoomOX.nil?
 			self.oy = defOY if !@zoomOY.nil?
-			echoln("Frame: " + @zoom["frame"].to_s + " " + @zoom["XValue"].to_s + " " + @zoom["YValue"].to_s)
+			#echoln("Frame: " + @zoom["frame"].to_s + " " + @zoom["XValue"].to_s + " " + @zoom["YValue"].to_s)
 			if @zoom["frame"] >= @zoom["totFrame"]
 				@zoom["active"] = false
 				self.zoom_x = @zoom["edX"]
 				self.zoom_y = @zoom["edY"]
+				@zoom["callback"].call(self,:zoom) if @zoom["callback"]
 			end
 		end
 		if @rotate["active"]
@@ -210,6 +223,7 @@ module EAM_Sprite
 			if @rotate["frame"] >= @rotate["totFrame"]
 				@rotate["active"] = false
 				self.angle = @rotate["end"]
+				@rotate["callback"].call(self,:rotate) if @rotate["callback"]
 			end
 		end
 		if @coloring["active"]
@@ -222,6 +236,7 @@ module EAM_Sprite
 			if @coloring["frame"] >= @coloring["totFrame"]
 				@coloring["active"] = false
 				self.color = @coloring["end"]
+				@coloring["callback"].call(self,:coloring) if @coloring["callback"]
 			end
 		end
 	end

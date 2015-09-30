@@ -1,7 +1,30 @@
-##################################################################################
+################################################################################
+# Callbacks class
+################################################################################
+class EAM_Callback
+	DEBUG = true
+	class << self
+		def log(obj,type)
+			case type
+			when :move
+				echoln("Move finished") if DEBUG
+				when :fade
+				echoln("Fade finished") if DEBUG
+				when :zoom
+				echoln("Zoom finished") if DEBUG
+				when :rotate
+				echoln("Rotate finished") if DEBUG
+				when :coloring
+				echoln("Coloring finished") if DEBUG
+			end
+		end
+	end
+end
+
+################################################################################
 # A port of known Robert Penner's easing functions for Ruby by munshkr
 # https://github.com/munshkr/easing-ruby/
-##################################################################################
+################################################################################
 
 class Ease
 	class << self
