@@ -9,6 +9,10 @@ module EAM_Sprite
 	attr_reader		:rotationOY
 	attr_reader		:zoomOX
 	attr_reader		:zoomOY
+	attr_accessor	:circX
+	attr_accessor	:circY
+	attr_reader		:angle
+	attr_reader		:radius
 	
 	alias :initialize_old :initialize
 	def initialize(viewport=nil)
@@ -18,6 +22,10 @@ module EAM_Sprite
 		@rotationOY = nil
 		@zoomOX = nil
 		@zoomOY = nil
+		@circX = 0
+		@circY = 0
+		@angle = nil
+		@radius = nil
 		@transition ={}
 		@fade ={}
 		@zoom ={}
@@ -31,10 +39,13 @@ module EAM_Sprite
 		@transition["frame"] = 0
 		@transition["totFrame"] = 0
 		@transition["ease"] = nil
+		@transition["stAngle"] = 0
+		@transition["currAngle"] = 0
 		@transition["XValue"] = 0
 		@transition["YValue"] = 0
 		@transition["callback"] = nil
 		@transition["active"] = false
+		# TODO - Add radius and centre point animation
 		# Initializing opacity variables
 		@fade["start"] = 0
 		@fade["end"] = 0
@@ -86,7 +97,44 @@ module EAM_Sprite
 		@zoomOY = y
 	end
 	
-	# Animate position
+	def setCircPoint(x,y)
+		@circX = x
+		@circY = y
+	end
+	
+	def calculateRadius
+		dX = (@circX - self.x).abs
+		dY = (@circY - self.y).abs
+		echoln("Raggio: " + (Math.sqrt(dX * dX + dY * dY)).to_s)
+		return @radius = Math.sqrt(dX * dX + dY * dY)
+	end
+	
+	def calculateAngle
+		begin
+			m = -(self.y - @circY).to_f / (self.x - @circX).to_f
+		rescue
+			return (@circY > self.y ? 90 : 270)
+		end
+		# echoln("m: " + m.to_s + " - y = " + self.y.to_s + " cy = " + @circY.to_s + " x = " + self.x.to_s + " cx = " + @circX.to_s)
+		@angle = Curve.deg(Math.atan(m))
+		if m > 0
+			@angle += 180 if @circY < self.y
+		elsif m < 0
+			if @circY > self.y
+				@angle += 180
+			else
+				@angle += 360
+			end
+		else
+			@angle = (self.x > @circX ? 0 : 180)
+		end
+		
+		# @angle += 360 if @angle < 0
+		echoln("Angolo: " + @angle.round.to_s)
+		return @angle
+	end
+	
+	# Animate position (straight line)
 	def move(x,y,frame,ease=:linear_tween,callback=nil)
 		@transition["stX"] = self.x
 		@transition["stY"] = self.y
@@ -99,7 +147,25 @@ module EAM_Sprite
 		@transition["YValue"] = self.y
 		@transition["callback"] = callback ? EAM_Callback.method(callback) : nil
 		@transition["active"] = true
+		@transition["type"] = "linear"
 	end
+	
+	# Animate position (curve)
+	def curveMove(angle,frame,ease=:linear_tween,callback=nil)
+		calculateAngle
+		calculateRadius
+		@transition["stAngle"] = @angle
+		@transition["edAngle"] = angle
+		@transition["ease"] = Ease.method(ease)
+		@transition["currAngle"] = @angle
+		@transition["frame"] = 0
+		@transition["totFrame"] = frame
+		@transition["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@transition["active"] = true
+		@transition["type"] = "curve"
+		# echoln("Start: " + @transition["stAngle"].to_s + " End: " + @transition["edAngle"].to_s)
+	end
+	# NB: 'move' and 'curveMove' cannot be played at the same time
 	
 	# Animate opacity
 	def fade(opacity,frame,ease=:linear_tween,callback=nil)
@@ -158,16 +224,35 @@ module EAM_Sprite
 		drag_xy if @draggable
 		if @transition["active"]
 			@transition["frame"] += 1
-			@transition["XValue"] = @transition["ease"].call(@transition["frame"], @transition["stX"], @transition["edX"]-@transition["stX"], @transition["totFrame"])
-			@transition["YValue"] = @transition["ease"].call(@transition["frame"], @transition["stY"], @transition["edY"]-@transition["stY"], @transition["totFrame"])
-			
-			self.x = @transition["XValue"].round
-			self.y = @transition["YValue"].round
-			if @transition["frame"] >= @transition["totFrame"]
-				@transition["active"] = false
-				self.x = @transition["edX"]
-				self.y = @transition["edY"]
-				@transition["callback"].call(self,:move) if @transition["callback"]
+			if @transition["type"] == "linear"
+				@transition["XValue"] = @transition["ease"].call(@transition["frame"], @transition["stX"], @transition["edX"]-@transition["stX"], @transition["totFrame"])
+				@transition["YValue"] = @transition["ease"].call(@transition["frame"], @transition["stY"], @transition["edY"]-@transition["stY"], @transition["totFrame"])
+				
+				self.x = @transition["XValue"].round
+				self.y = @transition["YValue"].round
+				if @transition["frame"] >= @transition["totFrame"]
+					@transition["active"] = false
+					self.x = @transition["edX"]
+					self.y = @transition["edY"]
+					@transition["callback"].call(self,:move) if @transition["callback"]
+				end
+			elsif @transition["type"] == "curve"
+				@transition["currAngle"] = @transition["ease"].call(@transition["frame"], @transition["stAngle"], @transition["edAngle"]-@transition["stAngle"], @transition["totFrame"])
+				# echoln("Angolo corrente: " + @transition["currAngle"].to_s)
+				#@transition["XValue"] = Curve.radius(@circX,@transition["currAngle"],@radius,true)
+				#@transition["YValue"] = Curve.radius(@circY,@transition["currAngle"],@radius,false)
+				# echoln(@transition["currAngle"].to_s + "^ X=" + @transition["XValue"].round.to_s + " Y=" + @transition["YValue"].round.to_s)
+				
+				self.x = Curve.radius(@circX,@transition["currAngle"],@radius,true)
+				self.y = Curve.radius(@circY,@transition["currAngle"],@radius,false)
+				
+				#self.x = @transition["XValue"].round
+				#self.y = @transition["YValue"].round
+				if @transition["frame"] >= @transition["totFrame"]
+					@transition["active"] = false
+					calculateAngle
+					@transition["callback"].call(self,:move) if @transition["callback"]
+				end
 			end
 		end
 		if @fade["active"]
@@ -232,7 +317,7 @@ module EAM_Sprite
 			@coloring["colorVal"].green = @coloring["ease"].call(@coloring["frame"], @coloring["start"].green, @coloring["end"].green-@coloring["start"].green, @coloring["totFrame"]) if @coloring["start"].green != @coloring["end"].green
 			@coloring["colorVal"].blue = @coloring["ease"].call(@coloring["frame"], @coloring["start"].blue, @coloring["end"].blue-@coloring["start"].blue, @coloring["totFrame"]) if @coloring["start"].blue != @coloring["end"].blue
 			@coloring["colorVal"].alpha = @coloring["ease"].call(@coloring["frame"], @coloring["start"].alpha, @coloring["end"].alpha-@coloring["start"].alpha, @coloring["totFrame"]) if @coloring["start"].alpha != @coloring["end"].alpha
-			self.color = @coloring["colorVal"].round
+			self.color = @coloring["colorVal"]
 			if @coloring["frame"] >= @coloring["totFrame"]
 				@coloring["active"] = false
 				self.color = @coloring["end"]

@@ -25,7 +25,7 @@ end
 
 def testEAM
 	obj = EAMSprite.new
-	obj.bitmap = Bitmap.new("Graphics/Pictures/WheelMenu/cerchioMagico")
+	obj.bitmap = Bitmap.new("Graphics/Pictures/ball00")	# Change it with the image path that you want to use
 	EAM_Callback.back1(obj,:move)
 	while obj.isAnimating?
 		obj.update

@@ -21,6 +21,36 @@ class EAM_Callback
 	end
 end
 
+class Curve
+	class << self
+		def radius(origin, angle, rad, axisX)	# axisX = true if calculating X, else false if calculating Y
+			if axisX
+				# echoln("Cos - origine: " + origin.to_s + " Angle: " + angle.to_s + " Rad: " + rad.to_s)
+				return origin + Math.cos(Curve.rad(angle)) * rad
+			else
+				# echoln("Sin - origine: " + origin.to_s + " Angle: " + angle.to_s + " Rad: " + rad.to_s)
+				return origin - Math.sin(Curve.rad(angle)) * rad
+			end
+		end
+		
+		# Convert Radiants to Degrees
+		def deg(radiants)
+			return radiants * 180 / Math::PI
+		end
+		
+		# Convert Degrees to Radiants
+		def rad(degrees)
+			return degrees * Math::PI / 180 
+		end
+		
+		# Convert value in a valid angle [0-360]
+		def angle(angle)
+			return angle % 360
+		end
+		
+	end
+end
+
 ################################################################################
 # A port of known Robert Penner's easing functions for Ruby by munshkr
 # https://github.com/munshkr/easing-ruby/
@@ -30,7 +60,7 @@ class Ease
 	class << self
 		def linear_tween(t, b, c, d)
 			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
-
+			
 			return c * t / d + b
 		end
 
@@ -39,7 +69,8 @@ class Ease
 
 			return c*(t/=d)*t + b;
 		end
-
+			
+			
 		def ease_out_quad(t, b, c, d)
 			t = t.to_f; b = b.to_f; c = c.to_f; d = d.to_f
 
