@@ -23,7 +23,7 @@ end
 
 class Curve
 	class << self
-		def radius(origin, angle, rad, axisX)	# axisX = true if calculating X, else false if calculating Y
+		def radiusFromAngle(origin, angle, rad, axisX)	# axisX = true if calculating X, else false if calculating Y
 			if axisX
 				# echoln("Cos - origine: " + origin.to_s + " Angle: " + angle.to_s + " Rad: " + rad.to_s)
 				return origin + Math.cos(Curve.rad(angle)) * rad
@@ -44,11 +44,41 @@ class Curve
 		end
 		
 		# Convert value in a valid angle [0-360]
-		def angle(angle)
+		def correctAngle(angle)
 			return angle % 360
 		end
 		
+		def radiusFromPoints(circX, circY, pX, pY)
+			dX = (circX - pX).abs
+			dY = (circY - pY).abs
+			return Math.sqrt(dX * dX + dY * dY)
+		end
+	
+	def angle(circX, circY, pX, pY)
+		begin
+			m = -(pY - circY).to_f / (pX - circX).to_f
+		rescue
+			return (circY > pY ? 90 : 270)
+		end
+		# echoln("m: " + m.to_s + " - y = " + self.y.to_s + " cy = " + @circY.to_s + " x = " + self.x.to_s + " cx = " + @circX.to_s)
+		angle = Curve.deg(Math.atan(m))
+		if m > 0
+			angle += 180 if circY < pY
+		elsif m < 0
+			if circY > pY
+				angle += 180
+			else
+				angle += 360
+			end
+		else
+			angle = (pX > circX ? 0 : 180)
+		end
+		
+			# @angle += 360 if @angle < 0
+		return angle
+		end
 	end
+		
 end
 
 ################################################################################

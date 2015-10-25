@@ -27,6 +27,7 @@ module EAM_Sprite
 		@angle = nil
 		@radius = nil
 		@transition ={}
+		@animationRadius ={}
 		@fade ={}
 		@zoom ={}
 		@rotate ={}
@@ -85,6 +86,8 @@ module EAM_Sprite
 		@coloring["colorVal"] = 0
 		@coloring["callback"] = nil
 		@coloring["active"] = false
+		# Initializing radius animation variables
+		@animationRadius["active"] = false
 	end
 	
 	def setRotationPoint(x,y)
@@ -102,36 +105,23 @@ module EAM_Sprite
 		@circY = y
 	end
 	
-	def calculateRadius
-		dX = (@circX - self.x).abs
-		dY = (@circY - self.y).abs
-		echoln("Raggio: " + (Math.sqrt(dX * dX + dY * dY)).to_s)
-		return @radius = Math.sqrt(dX * dX + dY * dY)
+	def calculateAngle
+		@angle = Curve.angle(@circX,@circY,self.x,self.y)
 	end
 	
-	def calculateAngle
-		begin
-			m = -(self.y - @circY).to_f / (self.x - @circX).to_f
-		rescue
-			return (@circY > self.y ? 90 : 270)
-		end
-		# echoln("m: " + m.to_s + " - y = " + self.y.to_s + " cy = " + @circY.to_s + " x = " + self.x.to_s + " cx = " + @circX.to_s)
-		@angle = Curve.deg(Math.atan(m))
-		if m > 0
-			@angle += 180 if @circY < self.y
-		elsif m < 0
-			if @circY > self.y
-				@angle += 180
-			else
-				@angle += 360
-			end
-		else
-			@angle = (self.x > @circX ? 0 : 180)
-		end
+	def calculateRadius
+		@radius = Curve.radiusFromPoints(@circX,@circY,self.x,self.y)
+	end
+	
+	def calculateCircCentre
 		
-		# @angle += 360 if @angle < 0
-		echoln("Angolo: " + @angle.round.to_s)
-		return @angle
+	end
+	
+	def calculatePosition(angle=nil)
+		angle = @angle if angle == nil
+		echoln("Angle " + angle.to_s)
+		self.x = Curve.radiusFromAngle(@circX,angle,@radius,true)
+		self.y = Curve.radiusFromAngle(@circY,angle,@radius,false)
 	end
 	
 	# Animate position (straight line)
@@ -166,6 +156,17 @@ module EAM_Sprite
 		# echoln("Start: " + @transition["stAngle"].to_s + " End: " + @transition["edAngle"].to_s)
 	end
 	# NB: 'move' and 'curveMove' cannot be played at the same time
+	
+	def animateRadius(length,frame,ease=:linear_tween,callback=nil)
+		calculateRadius
+		@animationRadius["start"] = @radius
+		@animationRadius["end"] = length
+		@animationRadius["ease"] = Ease.method(ease)
+		@animationRadius["frame"] = 0
+		@animationRadius["totFrame"] = frame
+		@animationRadius["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@animationRadius["active"] = true
+	end
 	
 	# Animate opacity
 	def fade(opacity,frame,ease=:linear_tween,callback=nil)
@@ -238,22 +239,27 @@ module EAM_Sprite
 				end
 			elsif @transition["type"] == "curve"
 				@transition["currAngle"] = @transition["ease"].call(@transition["frame"], @transition["stAngle"], @transition["edAngle"]-@transition["stAngle"], @transition["totFrame"])
-				# echoln("Angolo corrente: " + @transition["currAngle"].to_s)
-				#@transition["XValue"] = Curve.radius(@circX,@transition["currAngle"],@radius,true)
-				#@transition["YValue"] = Curve.radius(@circY,@transition["currAngle"],@radius,false)
-				# echoln(@transition["currAngle"].to_s + "^ X=" + @transition["XValue"].round.to_s + " Y=" + @transition["YValue"].round.to_s)
 				
-				self.x = Curve.radius(@circX,@transition["currAngle"],@radius,true)
-				self.y = Curve.radius(@circY,@transition["currAngle"],@radius,false)
+				calculatePosition(@transition["currAngle"])
 				
 				#self.x = @transition["XValue"].round
 				#self.y = @transition["YValue"].round
 				if @transition["frame"] >= @transition["totFrame"]
 					@transition["active"] = false
-					calculateAngle
+					@angle = @transition["end"]
+					calculatePosition
 					@transition["callback"].call(self,:move) if @transition["callback"]
 				end
 			end
+		end
+		if @animationRadius["active"]
+			@animationRadius["frame"] += 1
+			@radius = @animationRadius["ease"].call(@animationRadius["frame"], @animationRadius["start"], @animationRadius["end"]-@animationRadius["start"], @animationRadius["totFrame"])
+			if @animationRadius["frame"] >= @animationRadius["totFrame"]
+				@animationRadius["active"] = false
+				@radius = @animationRadius["end"]
+				end
+			calculatePosition
 		end
 		if @fade["active"]
 			@fade["frame"] += 1
@@ -346,8 +352,12 @@ module EAM_Sprite
 		return @coloring["active"]
 	end
 	
+	def isRadius?
+		return @animationRadius["active"]
+	end
+	
 	def isAnimating?
-		return isTransition? || isFade? || isRotate? || isZoom? || isColor?
+		return isTransition? || isFade? || isRotate? || isZoom? || isColor? || isRadius?
 	end
 	
 	# Used to calculate a valid angle
