@@ -28,66 +28,69 @@ module EAM_Sprite
 		@radius = nil
 		@transition ={}
 		@animationRadius ={}
+		@transitionCirc ={}
 		@fade ={}
 		@zoom ={}
 		@rotate ={}
 		@coloring ={}
 		# Initializing position variables
-		@transition["stX"] = 0
-		@transition["stY"] = 0
-		@transition["edX"] = 0
-		@transition["edY"] = 0
-		@transition["frame"] = 0
-		@transition["totFrame"] = 0
-		@transition["ease"] = nil
-		@transition["stAngle"] = 0
-		@transition["currAngle"] = 0
-		@transition["XValue"] = 0
-		@transition["YValue"] = 0
-		@transition["callback"] = nil
+		#@transition["stX"] = 0
+		#@transition["stY"] = 0
+		#@transition["edX"] = 0
+		#transition["edY"] = 0
+		#@transition["frame"] = 0
+		#@transition["totFrame"] = 0
+		#@transition["ease"] = nil
+		#@transition["stAngle"] = 0
+		#@transition["currAngle"] = 0
+		#@transition["XValue"] = 0
+		#@transition["YValue"] = 0
+		#@transition["callback"] = nil
 		@transition["active"] = false
 		# TODO - Add radius and centre point animation
 		# Initializing opacity variables
-		@fade["start"] = 0
-		@fade["end"] = 0
-		@fade["frame"] = 0
-		@fade["totFrame"] = 0
-		@fade["ease"] = nil
-		@fade["opacityVal"] = 0
-		@fade["callback"] = nil
+		#@fade["start"] = 0
+		#@fade["end"] = 0
+		#@fade["frame"] = 0
+		#@fade["totFrame"] = 0
+		#@fade["ease"] = nil
+		#@fade["opacityVal"] = 0
+		#@fade["callback"] = nil
 		@fade["active"] = false
 		# Initializing zoom variables
-		@zoom["stX"] = 0
-		@zoom["stY"] = 0
-		@zoom["edX"] = 0
-		@zoom["edY"] = 0
-		@zoom["frame"] = 0
-		@zoom["totFrame"] = 0
-		@zoom["ease"] = nil
-		@zoom["XValue"] = 0
-		@zoom["YValue"] = 0
-		@zoom["callback"] = nil
+		#@zoom["stX"] = 0
+		#@zoom["stY"] = 0
+		#@zoom["edX"] = 0
+		#@zoom["edY"] = 0
+		#@zoom["frame"] = 0
+		#@zoom["totFrame"] = 0
+		#@zoom["ease"] = nil
+		#@zoom["XValue"] = 0
+		#@zoom["YValue"] = 0
+		#@zoom["callback"] = nil
 		@zoom["active"] = false
 		# Initializing angle variables
-		@rotate["start"] = 0
-		@rotate["end"] = 0
-		@rotate["frame"] = 0
-		@rotate["totFrame"] = 0
-		@rotate["ease"] = nil
-		@rotate["angleVal"] = 0
-		@rotate["callback"] = nil
+		#@rotate["start"] = 0
+		#@rotate["end"] = 0
+		#@rotate["frame"] = 0
+		#@rotate["totFrame"] = 0
+		#@rotate["ease"] = nil
+		#@rotate["angleVal"] = 0
+		#@rotate["callback"] = nil
 		@rotate["active"] = false
 		# Initializing color variables
-		@coloring["start"] = 0
-		@coloring["end"] = 0
-		@coloring["frame"] = 0
-		@coloring["totFrame"] = 0
-		@coloring["ease"] = nil
-		@coloring["colorVal"] = 0
-		@coloring["callback"] = nil
+		#@coloring["start"] = 0
+		#@coloring["end"] = 0
+		#@coloring["frame"] = 0
+		#@coloring["totFrame"] = 0
+		#@coloring["ease"] = nil
+		#@coloring["colorVal"] = 0
+		#@coloring["callback"] = nil
 		@coloring["active"] = false
 		# Initializing radius animation variables
 		@animationRadius["active"] = false
+		# initializing circumference centre animation variables
+		@transitionCirc["active"] = false
 	end
 	
 	def setRotationPoint(x,y)
@@ -114,14 +117,15 @@ module EAM_Sprite
 	end
 	
 	def calculateCircCentre
-		
+		@circX = self.x - @radius * Math.cos(@angle)
+		@circY = self.y - @radius * Math.sin(@angle)
 	end
 	
 	def calculatePosition(angle=nil)
 		angle = @angle if angle == nil
 		echoln("Angle " + angle.to_s)
-		self.x = Curve.radiusFromAngle(@circX,angle,@radius,true)
-		self.y = Curve.radiusFromAngle(@circY,angle,@radius,false)
+		self.x = Curve.circPoint(@circX,angle,@radius,true)
+		self.y = Curve.circPoint(@circY,angle,@radius,false)
 	end
 	
 	# Animate position (straight line)
@@ -133,8 +137,8 @@ module EAM_Sprite
 		@transition["frame"] = 0
 		@transition["totFrame"] = frame
 		@transition["ease"] = Ease.method(ease)
-		@transition["XValue"] = self.x
-		@transition["YValue"] = self.y
+		#@transition["XValue"] = self.x
+		#@transition["YValue"] = self.y
 		@transition["callback"] = callback ? EAM_Callback.method(callback) : nil
 		@transition["active"] = true
 		@transition["type"] = "linear"
@@ -157,6 +161,19 @@ module EAM_Sprite
 	end
 	# NB: 'move' and 'curveMove' cannot be played at the same time
 	
+	def moveCirc(cX,cY,frame,ease=:linear_tween,callback=nil)
+		calculateCircCentre
+		@transitionCirc["stX"] = @circX
+		@transitionCirc["stY"] = @circY
+		@transitionCirc["edX"] = cX
+		@transitionCirc["edY"] = cY
+		@transitionCirc["ease"] = Ease.method(ease)
+		@transitionCirc["frame"] = 0
+		@transitionCirc["totFrame"] = frame
+		@transitionCirc["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@transitionCirc["active"] = true
+	end
+	
 	def animateRadius(length,frame,ease=:linear_tween,callback=nil)
 		calculateRadius
 		@animationRadius["start"] = @radius
@@ -175,7 +192,6 @@ module EAM_Sprite
 		@fade["frame"] = 0
 		@fade["totFrame"] = frame
 		@fade["ease"] = Ease.method(ease)
-		@fade["opacityVal"] = self.opacity
 		@fade["callback"] = callback ? EAM_Callback.method(callback) : nil
 		@fade["active"] = true
 	end
@@ -189,8 +205,6 @@ module EAM_Sprite
 		@zoom["frame"] = 0
 		@zoom["totFrame"] = frame
 		@zoom["ease"] = Ease.method(ease)
-		@zoom["XValue"] = self.zoom_x
-		@zoom["YValue"] = self.zoom_y
 		@zoom["callback"] = callback ? EAM_Callback.method(callback) : nil
 		@zoom["active"] = true
 	end
@@ -202,7 +216,6 @@ module EAM_Sprite
 		@rotate["frame"] = 0
 		@rotate["totFrame"] = frame
 		@rotate["ease"] = Ease.method(ease)
-		@rotate["angleVal"] = self.angle
 		@rotate["callback"] = callback ? EAM_Callback.method(callback) : nil
 		@rotate["active"] = true
 	end
@@ -214,23 +227,35 @@ module EAM_Sprite
 		@coloring["frame"] = 0
 		@coloring["totFrame"] = frame
 		@coloring["ease"] = Ease.method(ease)
-		@coloring["colorVal"] = self.color.clone
+		@coloring["color"] = Color.new(0,0,0)
 		@coloring["callback"] = callback ? EAM_Callback.method(callback) : nil
 		@coloring["active"] = true
 	end
 	
+	def waitAnimation
+		while isAnimating?
+			update
+			Graphics.update
+		end
+	end
+	
 	# alias :update_old :update
+###############################################################################
+##### UPDATE METHOD #####
+###############################################################################
 	def update
 		# update_old
 		drag_xy if @draggable
+		needCalculatePosition = false
+		calculatePositionParam = nil
 		if @transition["active"]
 			@transition["frame"] += 1
 			if @transition["type"] == "linear"
-				@transition["XValue"] = @transition["ease"].call(@transition["frame"], @transition["stX"], @transition["edX"]-@transition["stX"], @transition["totFrame"])
-				@transition["YValue"] = @transition["ease"].call(@transition["frame"], @transition["stY"], @transition["edY"]-@transition["stY"], @transition["totFrame"])
+				xx = @transition["ease"].call(@transition["frame"], @transition["stX"], @transition["edX"]-@transition["stX"], @transition["totFrame"])
+				yy = @transition["ease"].call(@transition["frame"], @transition["stY"], @transition["edY"]-@transition["stY"], @transition["totFrame"])
 				
-				self.x = @transition["XValue"].round
-				self.y = @transition["YValue"].round
+				self.x = xx.round
+				self.y = yy.round
 				if @transition["frame"] >= @transition["totFrame"]
 					@transition["active"] = false
 					self.x = @transition["edX"]
@@ -238,9 +263,11 @@ module EAM_Sprite
 					@transition["callback"].call(self,:move) if @transition["callback"]
 				end
 			elsif @transition["type"] == "curve"
-				@transition["currAngle"] = @transition["ease"].call(@transition["frame"], @transition["stAngle"], @transition["edAngle"]-@transition["stAngle"], @transition["totFrame"])
+				angle = @transition["ease"].call(@transition["frame"], @transition["stAngle"], @transition["edAngle"]-@transition["stAngle"], @transition["totFrame"])
+				needCalculatePosition = true
+				calculatePositionParam = angle
 				
-				calculatePosition(@transition["currAngle"])
+				#calculatePosition(@transition["currAngle"])
 				
 				#self.x = @transition["XValue"].round
 				#self.y = @transition["YValue"].round
@@ -248,23 +275,43 @@ module EAM_Sprite
 					@transition["active"] = false
 					@angle = @transition["end"]
 					calculatePosition
-					@transition["callback"].call(self,:move) if @transition["callback"]
+					calculatePositionParam = @angle
+					@transition["callback"].call(self,:moveCurve) if @transition["callback"]
 				end
 			end
 		end
 		if @animationRadius["active"]
 			@animationRadius["frame"] += 1
 			@radius = @animationRadius["ease"].call(@animationRadius["frame"], @animationRadius["start"], @animationRadius["end"]-@animationRadius["start"], @animationRadius["totFrame"])
+			needCalculatePosition = true
 			if @animationRadius["frame"] >= @animationRadius["totFrame"]
 				@animationRadius["active"] = false
 				@radius = @animationRadius["end"]
-				end
-			calculatePosition
+				calculatePosition
+				@animationRadius["callback"].call(self,:animateRadius) if @animationRadius["callback"]
+			end
 		end
+		if @transitionCirc["active"]
+			@transitionCirc["frame"] += 1
+			cX = @transitionCirc["ease"].call(@transitionCirc["frame"], @transitionCirc["stX"], @transitionCirc["edX"]-@transitionCirc["stX"], @transitionCirc["totFrame"])
+			cY = @transitionCirc["ease"].call(@transitionCirc["frame"], @transitionCirc["stY"], @transitionCirc["edY"]-@transitionCirc["stY"], @transitionCirc["totFrame"])
+			@circX = cX.round
+			@circY = cY.round
+			needCalculatePosition = true
+			if @transitionCirc["frame"] >= @transitionCirc["totFrame"]
+				@transitionCirc["active"] = false
+				@circX = @transitionCirc["edX"]
+				@circY = @transitionCirc["edY"]
+				calculatePosition
+				@transitionCirc["callback"].call(self,:moveCirc) if @transitionCirc["callback"]
+			end
+		end
+		# Calculate the position just once
+		calculatePosition(calculatePositionParam) if needCalculatePosition 
 		if @fade["active"]
 			@fade["frame"] += 1
-			@fade["opacityVal"] = @fade["ease"].call(@fade["frame"], @fade["start"], @fade["end"]-@fade["start"], @fade["totFrame"])
-			self.opacity = @fade["opacityVal"].round
+			op = @fade["ease"].call(@fade["frame"], @fade["start"], @fade["end"]-@fade["start"], @fade["totFrame"])
+			self.opacity = op.round
 			if @fade["frame"] >= @fade["totFrame"]
 				@fade["active"] = false
 				self.opacity = @fade["end"]
@@ -273,8 +320,8 @@ module EAM_Sprite
 		end
 		if @zoom["active"]
 			@zoom["frame"] += 1
-			@zoom["XValue"] = @zoom["ease"].call(@zoom["frame"], @zoom["stX"], @zoom["edX"]-@zoom["stX"], @zoom["totFrame"])
-			@zoom["YValue"] = @zoom["ease"].call(@zoom["frame"], @zoom["stY"], @zoom["edY"]-@zoom["stY"], @zoom["totFrame"])
+			zX = @zoom["ease"].call(@zoom["frame"], @zoom["stX"], @zoom["edX"]-@zoom["stX"], @zoom["totFrame"])
+			zY = @zoom["ease"].call(@zoom["frame"], @zoom["stY"], @zoom["edY"]-@zoom["stY"], @zoom["totFrame"])
 			if !@zoomOX.nil?
 				defOX = self.ox
 				self.ox = @zoomOX
@@ -285,8 +332,8 @@ module EAM_Sprite
 				self.oy = @zoomOY
 				#echoln (@zoomOY.to_s)
 			end
-			self.zoom_x = @zoom["XValue"]
-			self.zoom_y = @zoom["YValue"]
+			self.zoom_x = zX
+			self.zoom_y = zY
 			self.ox = defOX if !@zoomOX.nil?
 			self.oy = defOY if !@zoomOY.nil?
 			#echoln("Frame: " + @zoom["frame"].to_s + " " + @zoom["XValue"].to_s + " " + @zoom["YValue"].to_s)
@@ -299,7 +346,7 @@ module EAM_Sprite
 		end
 		if @rotate["active"]
 			@rotate["frame"] += 1
-			@rotate["rotateVal"] = validAngle(@rotate["ease"].call(@rotate["frame"], @rotate["start"], @rotate["end"]-@rotate["start"], @rotate["totFrame"]))
+			rot = Curve.correctAngle(@rotate["ease"].call(@rotate["frame"], @rotate["start"], @rotate["end"]-@rotate["start"], @rotate["totFrame"]))
 			if !@rotationOX.nil?
 				defOX = self.ox
 				self.ox = @rotationOX
@@ -308,7 +355,7 @@ module EAM_Sprite
 				defOY = self.oy
 				self.oy = @rotationOY
 			end
-			self.angle = @rotate["rotateVal"].round
+			self.angle = rot.round
 			self.ox = defOX if !@rotationOX.nil?
 			self.oy = defOY if !@rotationOY.nil?
 			if @rotate["frame"] >= @rotate["totFrame"]
@@ -319,11 +366,11 @@ module EAM_Sprite
 		end
 		if @coloring["active"]
 			@coloring["frame"] += 1
-			@coloring["colorVal"].red = @coloring["ease"].call(@coloring["frame"], @coloring["start"].red, @coloring["end"].red-@coloring["start"].red, @coloring["totFrame"]) if @coloring["start"].red != @coloring["end"].red
-			@coloring["colorVal"].green = @coloring["ease"].call(@coloring["frame"], @coloring["start"].green, @coloring["end"].green-@coloring["start"].green, @coloring["totFrame"]) if @coloring["start"].green != @coloring["end"].green
-			@coloring["colorVal"].blue = @coloring["ease"].call(@coloring["frame"], @coloring["start"].blue, @coloring["end"].blue-@coloring["start"].blue, @coloring["totFrame"]) if @coloring["start"].blue != @coloring["end"].blue
-			@coloring["colorVal"].alpha = @coloring["ease"].call(@coloring["frame"], @coloring["start"].alpha, @coloring["end"].alpha-@coloring["start"].alpha, @coloring["totFrame"]) if @coloring["start"].alpha != @coloring["end"].alpha
-			self.color = @coloring["colorVal"]
+			@coloring["color"].red = @coloring["ease"].call(@coloring["frame"], @coloring["start"].red, @coloring["end"].red-@coloring["start"].red, @coloring["totFrame"]) if @coloring["start"].red != @coloring["end"].red
+			@coloring["color"].green = @coloring["ease"].call(@coloring["frame"], @coloring["start"].green, @coloring["end"].green-@coloring["start"].green, @coloring["totFrame"]) if @coloring["start"].green != @coloring["end"].green
+			@coloring["color"].blue = @coloring["ease"].call(@coloring["frame"], @coloring["start"].blue, @coloring["end"].blue-@coloring["start"].blue, @coloring["totFrame"]) if @coloring["start"].blue != @coloring["end"].blue
+			@coloring["color"].alpha = @coloring["ease"].call(@coloring["frame"], @coloring["start"].alpha, @coloring["end"].alpha-@coloring["start"].alpha, @coloring["totFrame"]) if @coloring["start"].alpha != @coloring["end"].alpha
+			self.color = @coloring["color"]
 			if @coloring["frame"] >= @coloring["totFrame"]
 				@coloring["active"] = false
 				self.color = @coloring["end"]
@@ -352,19 +399,15 @@ module EAM_Sprite
 		return @coloring["active"]
 	end
 	
-	def isRadius?
+	def isAnimatingRadius?
 		return @animationRadius["active"]
 	end
 	
-	def isAnimating?
-		return isTransition? || isFade? || isRotate? || isZoom? || isColor? || isRadius?
+	def isAnimatingCirc?
+		return @transitionCirc["active"]
 	end
-	
-	# Used to calculate a valid angle
-	def validAngle(angle)
-		angle = angle - 360 if angle >= 360
-		angle = validAngle(angle) if angle >= 360
-		return angle
+	def isAnimating?
+		return isTransition? || isFade? || isRotate? || isZoom? || isColor? || isAnimatingRadius? || isAnimatingCirc?
 	end
 	
 	##############################################################################

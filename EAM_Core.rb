@@ -23,7 +23,7 @@ end
 
 class Curve
 	class << self
-		def radiusFromAngle(origin, angle, rad, axisX)	# axisX = true if calculating X, else false if calculating Y
+		def circPoint(origin, angle, rad, axisX)	# axisX = true if calculating X, else false if calculating Y
 			if axisX
 				# echoln("Cos - origine: " + origin.to_s + " Angle: " + angle.to_s + " Rad: " + rad.to_s)
 				return origin + Math.cos(Curve.rad(angle)) * rad
