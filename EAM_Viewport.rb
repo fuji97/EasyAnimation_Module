@@ -1,8 +1,7 @@
 ################################################################################
-#	EASYANIMATION MODULE FOR SPRITE, extend only Sprites
+#	EASYANIMATION MODULE FOR VIEWPORT, extend only Viewports
 ################################################################################
-module EAM_Sprite
-	attr_accessor	:draggable
+module EAM_Viewport
 	attr_reader		:rotationOX
 	attr_reader		:rotationOY
 	attr_reader		:zoomOX
@@ -13,8 +12,14 @@ module EAM_Sprite
 	attr_reader		:radius
 	
 	alias :initialize_old :initialize
-	def initialize(viewport=nil)
-		viewport ? super(viewport) : super()
+	def initialize(x,y=nil,width=nil,height=nil)
+		if y.nil? && width.nil? && height.nil?
+			super(x)
+		elsif x.nil? || y.nil? || width.nil? || height.nil?
+			raise
+		else
+			#TODO
+		end
 		@draggable = false
 		@rx = nil
 		@ry = nil
@@ -420,54 +425,5 @@ module EAM_Sprite
 	end
 	def isAnimating?
 		return isTransition? || isFade? || isRotate? || isZoom? || isColor? || isAnimatingRadius? || isAnimatingCirc?
-	end
-	
-	##############################################################################
-	# MOUSE METHOD - Require Luka S.J.'s mouse module
-	##############################################################################
-	
-	def leftClick?
-		return false if defined?($mouse) != nil
-		return $mouse.leftClick?(self)
-	end
-	
-	def rightClick?
-		return false if defined?($mouse) != nil
-		return $mouse.rightClick?(self)
-	end
-	
-	def leftPress?
-		return false if defined?($mouse) != nil
-		return $mouse.leftPress?(self)
-	end
-	
-	def rightPress?
-		return false if defined?($mouse) != nil
-		return $mouse.rightPress?(self)
-	end
-	
-	def over?
-		return false if defined?($mouse) != nil
-		return $mouse.over?(self)
-	end
-	
-	def overPixel?
-		return false if defined?($mouse) != nil
-		return $mouse.overPixel?(self)
-	end
-	
-	def drag_x(limit_x=nil,limit_width=nil)
-		return if defined?($mouse) != nil
-		$mouse.drag_x(self,limit_x,limit_width)
-	end
-	
-	def drag_x(limit_y=nil,limit_height=nil)
-		return if defined?($mouse) != nil
-		$mouse.drag_y(self,limit_y,limit_height)
-	end
-	
-	def drag_xy(limit_x=nil,limit_y=nil,limit_width=nil,limit_height=nil)
-		return if defined?($mouse) != nil
-		$mouse.drag_xy(self,limit_x,limit_y,limit_width,limit_height)
 	end
 end

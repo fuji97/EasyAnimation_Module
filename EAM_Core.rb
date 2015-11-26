@@ -78,7 +78,19 @@ class Curve
 		return angle
 		end
 	end
-		
+end
+
+# Update all elements in the passed array (or hash) at the same time (same frame)
+# NB This could be heavy to process
+def waitAnimation(array)
+	while true
+		exit = true
+		array.each {|element| exit = false if element.isAnimating?}
+		break if exit
+		array.each {|element| element.update}
+		Graphics.update
+		array.each {|element| element.postUpdate}
+	end
 end
 
 ################################################################################
