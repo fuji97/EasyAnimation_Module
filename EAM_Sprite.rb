@@ -1,6 +1,11 @@
 ################################################################################
 #	EASYANIMATION MODULE FOR SPRITE, extend only Sprites
+#
+# Version 1.0 (Build 1)
+# 18/11/15
+# Scripter: Fuji
 ################################################################################
+
 module EAM_Sprite
 	attr_accessor	:draggable
 	attr_reader		:rotationOX
