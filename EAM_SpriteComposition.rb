@@ -1,7 +1,7 @@
 ################################################################################
 #	EASYANIMATION MODULE FOR SPRITE_COMPOSITION, extend only Sprites_Composition
 #
-# Version 0.1 (Build 1)
+# Version 1.0 (Build 2)
 # 17/12/15
 # Scripter: Fuji
 ################################################################################
@@ -37,58 +37,14 @@ module EAM_SpriteComposition
 		@rotate ={}
 		@coloring ={}
 		# Initializing position variables
-		#@transition["stX"] = 0
-		#@transition["stY"] = 0
-		#@transition["edX"] = 0
-		#transition["edY"] = 0
-		#@transition["frame"] = 0
-		#@transition["totFrame"] = 0
-		#@transition["ease"] = nil
-		#@transition["stAngle"] = 0
-		#@transition["currAngle"] = 0
-		#@transition["XValue"] = 0
-		#@transition["YValue"] = 0
-		#@transition["callback"] = nil
 		@transition["active"] = false
-		# TODO - Add radius and centre point animation
 		# Initializing opacity variables
-		#@fade["start"] = 0
-		#@fade["end"] = 0
-		#@fade["frame"] = 0
-		#@fade["totFrame"] = 0
-		#@fade["ease"] = nil
-		#@fade["opacityVal"] = 0
-		#@fade["callback"] = nil
 		@fade["active"] = false
 		# Initializing zoom variables
-		#@zoom["stX"] = 0
-		#@zoom["stY"] = 0
-		#@zoom["edX"] = 0
-		#@zoom["edY"] = 0
-		#@zoom["frame"] = 0
-		#@zoom["totFrame"] = 0
-		#@zoom["ease"] = nil
-		#@zoom["XValue"] = 0
-		#@zoom["YValue"] = 0
-		#@zoom["callback"] = nil
 		@zoom["active"] = false
 		# Initializing angle variables
-		#@rotate["start"] = 0
-		#@rotate["end"] = 0
-		#@rotate["frame"] = 0
-		#@rotate["totFrame"] = 0
-		#@rotate["ease"] = nil
-		#@rotate["angleVal"] = 0
-		#@rotate["callback"] = nil
 		@rotate["active"] = false
 		# Initializing color variables
-		#@coloring["start"] = 0
-		#@coloring["end"] = 0
-		#@coloring["frame"] = 0
-		#@coloring["totFrame"] = 0
-		#@coloring["ease"] = nil
-		#@coloring["colorVal"] = 0
-		#@coloring["callback"] = nil
 		@coloring["active"] = false
 		# Initializing radius animation variables
 		@animationRadius["active"] = false
@@ -145,8 +101,6 @@ module EAM_SpriteComposition
 		@transition["frame"] = 0
 		@transition["totFrame"] = frame
 		@transition["ease"] = Ease.method(ease)
-		#@transition["XValue"] = self.x
-		#@transition["YValue"] = self.y
 		@transition["callback"] = callback ? EAM_Callback.method(callback) : nil
 		@transition["active"] = true
 		@transition["type"] = "linear"
@@ -263,6 +217,7 @@ module EAM_SpriteComposition
 				xx = @transition["ease"].call(@transition["frame"], @transition["stX"], @transition["edX"]-@transition["stX"], @transition["totFrame"])
 				yy = @transition["ease"].call(@transition["frame"], @transition["stY"], @transition["edY"]-@transition["stY"], @transition["totFrame"])
 				
+				echoln("Innesting new position: " + xx.round.to_s + " - " + yy.round.to_s)
 				self.x = xx.round
 				self.y = yy.round
 				if @transition["frame"] >= @transition["totFrame"]
@@ -275,11 +230,6 @@ module EAM_SpriteComposition
 				angle = @transition["ease"].call(@transition["frame"], @transition["stAngle"], @transition["edAngle"]-@transition["stAngle"], @transition["totFrame"])
 				needCalculatePosition = true
 				calculatePositionParam = angle
-				
-				#calculatePosition(@transition["currAngle"])
-				
-				#self.x = @transition["XValue"].round
-				#self.y = @transition["YValue"].round
 				if @transition["frame"] >= @transition["totFrame"]
 					@transition["active"] = false
 					@cAngle = @transition["edAngle"]
@@ -424,3 +374,4 @@ module EAM_SpriteComposition
 	def isAnimating?
 		return isTransition? || isFade? || isRotate? || isZoom? || isColor? || isAnimatingRadius? || isAnimatingCirc?
 	end
+end
