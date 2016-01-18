@@ -2,9 +2,9 @@
 A module for easy animate viewports and sprites in RGSS2
 
 This project contains:
-1- EAM_Sprite: module for sprite animation
-2- EAM:Viewport: module for viewport animation
-3- EAM_Core: class with core functions
+1. EAM_Sprite: module for sprite animation
+2. EAM:Viewport: module for viewport animation
+3. EAM_Core: class with core functions
 
 CREDITS:
 Easing function: https://github.com/munshkr/easing-ruby/
@@ -27,3 +27,9 @@ end
 - `EAM_SpriteComposition` -> Estende la classe `Sprite_Composition` (https://github.com/fuji97/Sprite_Composition)
 
 ## Metodi
+##### move(x,y,frame,ease=:linear_tween,callback=nil)
+`x` - Coordinate della posizione di destinazione (Ascissa)  
+`y` - Coordinate della posizione di destinazione (Ordinata)  
+`frame` - Durata dell'animazione (in frame)  
+`ease` - Tipo di ease, di default è `linear_tween`  
+`callback` - Definisce un metodo da chiamare al termine dell'animazione (callback), di default è nullo  
