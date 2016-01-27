@@ -114,3 +114,30 @@ Effettua tutte le animazioni impostate (avanti di un frame), di norma, da chiama
 
 ##### postUpdate()
 Ripristina i valori di `ox` e `oy` originali, da richiamare solitamente dopo il `Graphics.update` se si utilizza `setRotationPoint` o `setZoomPoint`  
+
+
+### Funzioni di controllo
+##### isAnimating?
+Restituisce vero se è in corso un'animazione
+
+##### isTransition?
+Restituisce vero se è in corso un'animazione di spostamento (move)
+	
+	##### isFade?
+		return @fade["active"]
+	Restituisce vero se è in corso un'animazione dell'opacità (fade)
+	
+	##### isRotate?
+Restituisce vero se è in corso un'animazione della rotazione (rotate)
+	
+	##### isZoom?
+Restituisce vero se è in corso un'animazione dello zoom (zoom)
+	
+	##### isColor?
+Restituisce vero se è in corso un'animazione del colore (coloring)
+	
+	##### isAnimatingRadius?
+Restituisce vero se è in corso un'animazione del raggio (animateRadius)
+	
+	##### isAnimatingCirc?
+Restituisce vero se è in corso un'animazione circolare (moveCirc)
