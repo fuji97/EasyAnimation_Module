@@ -123,21 +123,20 @@ Restituisce vero se è in corso un'animazione
 ##### isTransition?
 Restituisce vero se è in corso un'animazione di spostamento (move)
 	
-	##### isFade?
-		return @fade["active"]
-	Restituisce vero se è in corso un'animazione dell'opacità (fade)
+##### isFade?
+Restituisce vero se è in corso un'animazione dell'opacità (fade)
 	
-	##### isRotate?
+##### isRotate?
 Restituisce vero se è in corso un'animazione della rotazione (rotate)
-	
-	##### isZoom?
+
+##### isZoom?
 Restituisce vero se è in corso un'animazione dello zoom (zoom)
 	
-	##### isColor?
+##### isColor?
 Restituisce vero se è in corso un'animazione del colore (coloring)
 	
-	##### isAnimatingRadius?
+##### isAnimatingRadius?
 Restituisce vero se è in corso un'animazione del raggio (animateRadius)
 	
-	##### isAnimatingCirc?
+##### isAnimatingCirc?
 Restituisce vero se è in corso un'animazione circolare (moveCirc)
