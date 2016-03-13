@@ -1,9 +1,17 @@
 ################################################################################
+<<<<<<< HEAD
 # EasyAnimation Module - Core file
 # Writer: fuji97
 # Version 0.9
 # Build: 1
 # Date: 18/11/2015
+=======
+# EASYANIMATION CORE, must be always included (in the project, not in the class)
+#
+# Version 1.0 (Build 1)
+# 18/11/15
+# Scripter: Fuji
+>>>>>>> origin/master
 ################################################################################
 
 ################################################################################
@@ -89,7 +97,19 @@ class Curve
 		return angle
 		end
 	end
-		
+end
+
+# Update all elements in the passed array (or hash) at the same time (same frame)
+# NB This could be heavy to process
+def waitAnimation(array)
+	while true
+		exit = true
+		array.each {|element| exit = false if element.isAnimating?}
+		break if exit
+		array.each {|element| element.update}
+		Graphics.update
+		array.each {|element| element.postUpdate}
+	end
 end
 
 ################################################################################

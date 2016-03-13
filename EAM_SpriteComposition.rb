@@ -1,25 +1,12 @@
-<<<<<<< HEAD
 ################################################################################
-# EasyAnimation Module - Sprite module
-# Writer: fuji97
-# Version 0.9
-# Build: 1
-# Date: 18/11/2015
-################################################################################
-# TODO - Fix custom centre point
-
-=======
->>>>>>> origin/master
-################################################################################
-#	EASYANIMATION MODULE FOR SPRITE, extend only Sprites
+#	EASYANIMATION MODULE FOR SPRITE_COMPOSITION, extend only Sprites_Composition
 #
-# Version 1.0 (Build 1)
-# 18/11/15
+# Version 1.0 (Build 2)
+# 17/12/15
 # Scripter: Fuji
 ################################################################################
 
-module EAM_Sprite
-	attr_accessor	:draggable
+module EAM_SpriteComposition
 	attr_reader		:rotationOX
 	attr_reader		:rotationOY
 	attr_reader		:zoomOX
@@ -30,9 +17,8 @@ module EAM_Sprite
 	attr_reader		:radius
 	
 	alias :initialize_old :initialize
-	def initialize(viewport=nil)
-		viewport ? super(viewport) : super()
-		@draggable = false
+	def initialize(arr=nil,hash=false,viewport=nil)
+		super(arr,hash,viewport)
 		@rx = nil
 		@ry = nil
 		@zoomOX = nil
@@ -51,58 +37,14 @@ module EAM_Sprite
 		@rotate ={}
 		@coloring ={}
 		# Initializing position variables
-		#@transition["stX"] = 0
-		#@transition["stY"] = 0
-		#@transition["edX"] = 0
-		#transition["edY"] = 0
-		#@transition["frame"] = 0
-		#@transition["totFrame"] = 0
-		#@transition["ease"] = nil
-		#@transition["stAngle"] = 0
-		#@transition["currAngle"] = 0
-		#@transition["XValue"] = 0
-		#@transition["YValue"] = 0
-		#@transition["callback"] = nil
 		@transition["active"] = false
-		# TODO - Add radius and centre point animation
 		# Initializing opacity variables
-		#@fade["start"] = 0
-		#@fade["end"] = 0
-		#@fade["frame"] = 0
-		#@fade["totFrame"] = 0
-		#@fade["ease"] = nil
-		#@fade["opacityVal"] = 0
-		#@fade["callback"] = nil
 		@fade["active"] = false
 		# Initializing zoom variables
-		#@zoom["stX"] = 0
-		#@zoom["stY"] = 0
-		#@zoom["edX"] = 0
-		#@zoom["edY"] = 0
-		#@zoom["frame"] = 0
-		#@zoom["totFrame"] = 0
-		#@zoom["ease"] = nil
-		#@zoom["XValue"] = 0
-		#@zoom["YValue"] = 0
-		#@zoom["callback"] = nil
 		@zoom["active"] = false
 		# Initializing angle variables
-		#@rotate["start"] = 0
-		#@rotate["end"] = 0
-		#@rotate["frame"] = 0
-		#@rotate["totFrame"] = 0
-		#@rotate["ease"] = nil
-		#@rotate["angleVal"] = 0
-		#@rotate["callback"] = nil
 		@rotate["active"] = false
 		# Initializing color variables
-		#@coloring["start"] = 0
-		#@coloring["end"] = 0
-		#@coloring["frame"] = 0
-		#@coloring["totFrame"] = 0
-		#@coloring["ease"] = nil
-		#@coloring["colorVal"] = 0
-		#@coloring["callback"] = nil
 		@coloring["active"] = false
 		# Initializing radius animation variables
 		@animationRadius["active"] = false
@@ -159,8 +101,6 @@ module EAM_Sprite
 		@transition["frame"] = 0
 		@transition["totFrame"] = frame
 		@transition["ease"] = Ease.method(ease)
-		#@transition["XValue"] = self.x
-		#@transition["YValue"] = self.y
 		@transition["callback"] = callback ? EAM_Callback.method(callback) : nil
 		@transition["active"] = true
 		@transition["type"] = "linear"
@@ -277,6 +217,7 @@ module EAM_Sprite
 				xx = @transition["ease"].call(@transition["frame"], @transition["stX"], @transition["edX"]-@transition["stX"], @transition["totFrame"])
 				yy = @transition["ease"].call(@transition["frame"], @transition["stY"], @transition["edY"]-@transition["stY"], @transition["totFrame"])
 				
+				echoln("Innesting new position: " + xx.round.to_s + " - " + yy.round.to_s)
 				self.x = xx.round
 				self.y = yy.round
 				if @transition["frame"] >= @transition["totFrame"]
@@ -289,11 +230,6 @@ module EAM_Sprite
 				angle = @transition["ease"].call(@transition["frame"], @transition["stAngle"], @transition["edAngle"]-@transition["stAngle"], @transition["totFrame"])
 				needCalculatePosition = true
 				calculatePositionParam = angle
-				
-				#calculatePosition(@transition["currAngle"])
-				
-				#self.x = @transition["XValue"].round
-				#self.y = @transition["YValue"].round
 				if @transition["frame"] >= @transition["totFrame"]
 					@transition["active"] = false
 					@cAngle = @transition["edAngle"]
@@ -437,54 +373,5 @@ module EAM_Sprite
 	end
 	def isAnimating?
 		return isTransition? || isFade? || isRotate? || isZoom? || isColor? || isAnimatingRadius? || isAnimatingCirc?
-	end
-	
-	##############################################################################
-	# MOUSE METHOD - Require Luka S.J.'s mouse module
-	##############################################################################
-	
-	def leftClick?
-		return false if defined?($mouse) != nil
-		return $mouse.leftClick?(self)
-	end
-	
-	def rightClick?
-		return false if defined?($mouse) != nil
-		return $mouse.rightClick?(self)
-	end
-	
-	def leftPress?
-		return false if defined?($mouse) != nil
-		return $mouse.leftPress?(self)
-	end
-	
-	def rightPress?
-		return false if defined?($mouse) != nil
-		return $mouse.rightPress?(self)
-	end
-	
-	def over?
-		return false if defined?($mouse) != nil
-		return $mouse.over?(self)
-	end
-	
-	def overPixel?
-		return false if defined?($mouse) != nil
-		return $mouse.overPixel?(self)
-	end
-	
-	def drag_x(limit_x=nil,limit_width=nil)
-		return if defined?($mouse) != nil
-		$mouse.drag_x(self,limit_x,limit_width)
-	end
-	
-	def drag_x(limit_y=nil,limit_height=nil)
-		return if defined?($mouse) != nil
-		$mouse.drag_y(self,limit_y,limit_height)
-	end
-	
-	def drag_xy(limit_x=nil,limit_y=nil,limit_width=nil,limit_height=nil)
-		return if defined?($mouse) != nil
-		$mouse.drag_xy(self,limit_x,limit_y,limit_width,limit_height)
 	end
 end
