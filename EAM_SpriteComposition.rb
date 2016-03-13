@@ -1,8 +1,8 @@
 ################################################################################
 #	EASYANIMATION MODULE FOR SPRITE_COMPOSITION, extend only Sprites_Composition
 #
-# Version 1.0 (Build 2)
-# 17/12/15
+# Version 1.1 (Build 3)
+# 13/03/16
 # Scripter: Fuji
 ################################################################################
 
@@ -101,7 +101,7 @@ module EAM_SpriteComposition
 		@transition["frame"] = 0
 		@transition["totFrame"] = frame
 		@transition["ease"] = Ease.method(ease)
-		@transition["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@transition["callback"] = callback
 		@transition["active"] = true
 		@transition["type"] = "linear"
 	end
@@ -116,7 +116,7 @@ module EAM_SpriteComposition
 		@transition["currAngle"] = @cAngle
 		@transition["frame"] = 0
 		@transition["totFrame"] = frame
-		@transition["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@transition["callback"] = callback
 		@transition["active"] = true
 		@transition["type"] = "curve"
 		# echoln("Start: " + @transition["stAngle"].to_s + " End: " + @transition["edAngle"].to_s)
@@ -132,7 +132,7 @@ module EAM_SpriteComposition
 		@transitionCirc["ease"] = Ease.method(ease)
 		@transitionCirc["frame"] = 0
 		@transitionCirc["totFrame"] = frame
-		@transitionCirc["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@transitionCirc["callback"] = callback
 		@transitionCirc["active"] = true
 	end
 	
@@ -143,7 +143,7 @@ module EAM_SpriteComposition
 		@animationRadius["ease"] = Ease.method(ease)
 		@animationRadius["frame"] = 0
 		@animationRadius["totFrame"] = frame
-		@animationRadius["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@animationRadius["callback"] = callback
 		@animationRadius["active"] = true
 	end
 	
@@ -154,7 +154,7 @@ module EAM_SpriteComposition
 		@fade["frame"] = 0
 		@fade["totFrame"] = frame
 		@fade["ease"] = Ease.method(ease)
-		@fade["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@fade["callback"] = callback
 		@fade["active"] = true
 	end
 	
@@ -167,7 +167,7 @@ module EAM_SpriteComposition
 		@zoom["frame"] = 0
 		@zoom["totFrame"] = frame
 		@zoom["ease"] = Ease.method(ease)
-		@zoom["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@zoom["callback"] = callback
 		@zoom["active"] = true
 	end
 	
@@ -178,7 +178,7 @@ module EAM_SpriteComposition
 		@rotate["frame"] = 0
 		@rotate["totFrame"] = frame
 		@rotate["ease"] = Ease.method(ease)
-		@rotate["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@rotate["callback"] = callback
 		@rotate["active"] = true
 	end
 	
@@ -190,7 +190,7 @@ module EAM_SpriteComposition
 		@coloring["totFrame"] = frame
 		@coloring["ease"] = Ease.method(ease)
 		@coloring["color"] = Color.new(0,0,0)
-		@coloring["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@coloring["callback"] = callback
 		@coloring["active"] = true
 	end
 	

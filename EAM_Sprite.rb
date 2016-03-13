@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-################################################################################
-# EasyAnimation Module - Sprite module
-# Writer: fuji97
-# Version 0.9
-# Build: 1
-# Date: 18/11/2015
-################################################################################
-# TODO - Fix custom centre point
-
-=======
->>>>>>> origin/master
 ################################################################################
 #	EASYANIMATION MODULE FOR SPRITE, extend only Sprites
 #
-# Version 1.0 (Build 1)
-# 18/11/15
+# Version 1.1 (Build 2)
+# 13/03/16
 # Scripter: Fuji
 ################################################################################
 
@@ -161,7 +149,7 @@ module EAM_Sprite
 		@transition["ease"] = Ease.method(ease)
 		#@transition["XValue"] = self.x
 		#@transition["YValue"] = self.y
-		@transition["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@transition["callback"] = callback
 		@transition["active"] = true
 		@transition["type"] = "linear"
 	end
@@ -176,7 +164,7 @@ module EAM_Sprite
 		@transition["currAngle"] = @cAngle
 		@transition["frame"] = 0
 		@transition["totFrame"] = frame
-		@transition["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@transition["callback"] = callback
 		@transition["active"] = true
 		@transition["type"] = "curve"
 		# echoln("Start: " + @transition["stAngle"].to_s + " End: " + @transition["edAngle"].to_s)
@@ -192,7 +180,7 @@ module EAM_Sprite
 		@transitionCirc["ease"] = Ease.method(ease)
 		@transitionCirc["frame"] = 0
 		@transitionCirc["totFrame"] = frame
-		@transitionCirc["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@transitionCirc["callback"] = callback
 		@transitionCirc["active"] = true
 	end
 	
@@ -203,7 +191,7 @@ module EAM_Sprite
 		@animationRadius["ease"] = Ease.method(ease)
 		@animationRadius["frame"] = 0
 		@animationRadius["totFrame"] = frame
-		@animationRadius["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@animationRadius["callback"] = callback
 		@animationRadius["active"] = true
 	end
 	
@@ -214,7 +202,7 @@ module EAM_Sprite
 		@fade["frame"] = 0
 		@fade["totFrame"] = frame
 		@fade["ease"] = Ease.method(ease)
-		@fade["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@fade["callback"] = callback
 		@fade["active"] = true
 	end
 	
@@ -227,7 +215,7 @@ module EAM_Sprite
 		@zoom["frame"] = 0
 		@zoom["totFrame"] = frame
 		@zoom["ease"] = Ease.method(ease)
-		@zoom["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@zoom["callback"] = callback
 		@zoom["active"] = true
 	end
 	
@@ -238,7 +226,7 @@ module EAM_Sprite
 		@rotate["frame"] = 0
 		@rotate["totFrame"] = frame
 		@rotate["ease"] = Ease.method(ease)
-		@rotate["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@rotate["callback"] = callback
 		@rotate["active"] = true
 	end
 	
@@ -250,7 +238,7 @@ module EAM_Sprite
 		@coloring["totFrame"] = frame
 		@coloring["ease"] = Ease.method(ease)
 		@coloring["color"] = Color.new(0,0,0)
-		@coloring["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@coloring["callback"] = callback
 		@coloring["active"] = true
 	end
 	

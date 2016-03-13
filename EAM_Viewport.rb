@@ -1,8 +1,8 @@
 ################################################################################
 #	EASYANIMATION MODULE FOR VIEWPORT, extend only Viewports
 #
-# Version 1.0 (Build 1)
-# 5/12/15
+# Version 1.1 (Build 2)
+# 13/103/16
 # Scripter: Fuji
 ################################################################################
 module EAM_Viewport
@@ -82,7 +82,7 @@ module EAM_Viewport
 		@transition["ease"] = Ease.method(ease)
 		#@transition["XValue"] = self.rect.x
 		#@transition["YValue"] = self.rect.y
-		@transition["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@transition["callback"] = callback
 		@transition["active"] = true
 		@transition["type"] = "linear"
 	end
@@ -97,7 +97,7 @@ module EAM_Viewport
 		@transition["currAngle"] = @cAngle
 		@transition["frame"] = 0
 		@transition["totFrame"] = frame
-		@transition["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@transition["callback"] = callback
 		@transition["active"] = true
 		@transition["type"] = "curve"
 		# echoln("Start: " + @transition["stAngle"].to_s + " End: " + @transition["edAngle"].to_s)
@@ -113,7 +113,7 @@ module EAM_Viewport
 		@transitionCirc["ease"] = Ease.method(ease)
 		@transitionCirc["frame"] = 0
 		@transitionCirc["totFrame"] = frame
-		@transitionCirc["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@transitionCirc["callback"] = callback
 		@transitionCirc["active"] = true
 	end
 	
@@ -124,7 +124,7 @@ module EAM_Viewport
 		@animationRadius["ease"] = Ease.method(ease)
 		@animationRadius["frame"] = 0
 		@animationRadius["totFrame"] = frame
-		@animationRadius["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@animationRadius["callback"] = callback
 		@animationRadius["active"] = true
 	end
 	
@@ -136,7 +136,7 @@ module EAM_Viewport
 		@coloring["totFrame"] = frame
 		@coloring["ease"] = Ease.method(ease)
 		@coloring["color"] = Color.new(0,0,0)
-		@coloring["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@coloring["callback"] = callback
 		@coloring["active"] = true
 	end
 	
@@ -148,7 +148,7 @@ module EAM_Viewport
 		@toning["totFrame"] = frame
 		@toning["ease"] = Ease.method(ease)
 		@toning["color"] = Tone.new(0,0,0)
-		@toning["callback"] = callback ? EAM_Callback.method(callback) : nil
+		@toning["callback"] = callback
 		@toning["active"] = true
 	end
 	

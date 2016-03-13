@@ -1,17 +1,9 @@
 ################################################################################
-<<<<<<< HEAD
-# EasyAnimation Module - Core file
-# Writer: fuji97
-# Version 0.9
-# Build: 1
-# Date: 18/11/2015
-=======
 # EASYANIMATION CORE, must be always included (in the project, not in the class)
 #
 # Version 1.0 (Build 1)
 # 18/11/15
 # Scripter: Fuji
->>>>>>> origin/master
 ################################################################################
 
 ################################################################################
